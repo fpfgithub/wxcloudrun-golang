@@ -117,3 +117,6 @@ curl -X POST -H 'content-type: application/json' -d '{"action": "inc"}' https://
 ## License
 
 [MIT](./LICENSE)
+
+消息文档
+https://developers.weixin.qq.com/miniprogram/dev/wxcloudrun/src/development/weixin/callback.html
