@@ -157,3 +157,21 @@ func getIndex() (string, error) {
 	}
 	return string(b), nil
 }
+
+// FindHandler handles the /api/find endpoint
+func FindHandler(w http.ResponseWriter, r *http.Request) {
+	var params map[string]interface{}
+
+	// Decode the JSON request body
+	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Print the received JSON parameters
+	fmt.Printf("Received params: %+v\n", params)
+
+	// Respond with a success message
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Parameters received successfully"))
+}
