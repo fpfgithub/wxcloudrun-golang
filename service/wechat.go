@@ -1,7 +1,7 @@
 package service
 
 import (
-	"encoding/xml"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -9,22 +9,21 @@ import (
 
 // WeChatMessage represents the structure of a WeChat message
 type WeChatMessage struct {
-	ToUserName   string `xml:"ToUserName"`
-	FromUserName string `xml:"FromUserName"`
-	CreateTime   int64  `xml:"CreateTime"`
-	MsgType      string `xml:"MsgType"`
-	Content      string `xml:"Content"`
-	MsgId        int64  `xml:"MsgId"`
+	ToUserName   string  `json:"ToUserName"`
+	FromUserName string  `json:"FromUserName"`
+	CreateTime   float64 `json:"CreateTime"`
+	MsgType      string  `json:"MsgType"`
+	Content      string  `json:"Content"`
+	MsgId        float64 `json:"MsgId"`
 }
 
 // WeChatResponse represents the structure of a WeChat response
 type WeChatResponse struct {
-	XMLName      xml.Name `xml:"xml"`
-	ToUserName   string   `xml:"ToUserName"`
-	FromUserName string   `xml:"FromUserName"`
-	CreateTime   int64    `xml:"CreateTime"`
-	MsgType      string   `xml:"MsgType"`
-	Content      string   `xml:"Content"`
+	ToUserName   string `json:"ToUserName"`
+	FromUserName string `json:"FromUserName"`
+	CreateTime   int64  `json:"CreateTime"`
+	MsgType      string `json:"MsgType"`
+	Content      string `json:"Content"`
 }
 
 // WeChatMsgHandler handles WeChat messages
@@ -35,8 +34,8 @@ func WeChatMsgHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var msg WeChatMessage
-	if err := xml.NewDecoder(r.Body).Decode(&msg); err != nil {
-		http.Error(w, "Failed to parse XML", http.StatusBadRequest)
+	if err := json.NewDecoder(r.Body).Decode(&msg); err != nil {
+		http.Error(w, "Failed to parse JSON", http.StatusBadRequest)
 		return
 	}
 
@@ -48,9 +47,9 @@ func WeChatMsgHandler(w http.ResponseWriter, r *http.Request) {
 		Content:      "您发送的消息是: " + msg.Content,
 	}
 
-	w.Header().Set("Content-Type", "application/xml")
-	if err := xml.NewEncoder(w).Encode(response); err != nil {
-		http.Error(w, "Failed to encode XML response", http.StatusInternalServerError)
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Failed to encode JSON response", http.StatusInternalServerError)
 		return
 	}
 
