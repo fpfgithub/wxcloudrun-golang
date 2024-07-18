@@ -44,7 +44,16 @@ func WeChatMsgHandler(w http.ResponseWriter, r *http.Request) {
 		FromUserName: msg.ToUserName,
 		CreateTime:   time.Now().Unix(),
 		MsgType:      "text",
-		Content:      "您发送的消息是: " + msg.Content,
+		// Content:      "您发送的消息是: " + msg.Content,
+		Content: `----查询主播信息：----
+				昵称：小星星
+				ID：123434
+				抽成总收入：1768
+				直播总流水：3900
+				开播时间：07月18日 20:00
+				直播时长：2时23分
+				直播ID：1284928948
+				今日业绩：1789`,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
