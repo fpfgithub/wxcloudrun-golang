@@ -9,10 +9,7 @@ import (
 	"net/http"
 	neturl "net/url"
 	"os"
-	"regexp"
-	"strconv"
 	"strings"
-	"time"
 )
 
 type CaptchaConfig struct {
@@ -201,91 +198,7 @@ func postConfigToServer(wconfigJson string) (string, error) {
 		return "", fmt.Errorf("ck接口返回异常")
 	}
 
-	headers := map[string]string{
-		// "authority":          "login.taobao.com",
-		"accept":             "application/json, text/plain, */*",
-		"accept-language":    "zh-CN,zh;q=0.9",
-		"bx-v":               "2.5.3",
-		"cache-control":      "no-cache",
-		"content-type":       "application/x-www-form-urlencoded",
-		"pragma":             "no-cache",
-		"sec-ch-ua":          `"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"`,
-		"sec-ch-ua-mobile":   "?0",
-		"sec-ch-ua-platform": `"Windows"`,
-		"sec-fetch-dest":     "empty",
-		"sec-fetch-mode":     "cors",
-		"sec-fetch-site":     "same-origin",
-		"user-agent":         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-	}
-	headers["bx_et"] = responseData.BxEt
-	headers["bx-pp"] = responseData.BxPp
-	headers["referer"] = responseData.Referer
-
-	time.Sleep(time.Duration(rand.Float64()*0.5+1) * time.Second)
-
-	client = &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
-	}
-
-	req, err = http.NewRequest("GET", responseData.UrlEncode, nil)
-	if err != nil {
-		return "", err
-	}
-	for key, value := range headers {
-		req.Header.Set(key, value)
-	}
-
-	resp, err = client.Do(req)
-	if err != nil {
-		logger.Println(err)
-		return "", err
-	} else {
-		cookies := resp.Cookies()
-		logger.Println("cookies返回：", cookies)
-		for _, cookie := range cookies {
-			if cookie.Name == "x5sec" {
-				// logger.Println("成功获取 x5sec cookie", cookie.Value)
-				// 解析 Max-Age
-				maxAgePattern := regexp.MustCompile(`Max-Age=(\d+);`)
-				maxAgeMatch := maxAgePattern.FindStringSubmatch(cookie.String())
-				if len(maxAgeMatch) < 2 {
-					return "", fmt.Errorf("max-Age not found in cookie")
-				}
-				maxAge, err := strconv.Atoi(maxAgeMatch[1])
-				if err != nil {
-					return "", fmt.Errorf("invalid Max-Age value")
-				}
-				// 计算新的 expires 值
-				expires := time.Now().Add(time.Duration(maxAge-30) * time.Second).Unix()
-				// 组合 JSON
-				cookieData := []Cookie{
-					{
-						Name:   "x5sec",
-						Value:  cookie.Value,
-						Domain: ".taobao.com",
-						// Domain:       ".tmall.com",
-						Path:         "/",
-						Expires:      expires,
-						Size:         len(cookie.Value),
-						HttpOnly:     false,
-						Secure:       false,
-						Session:      false,
-						Priority:     "Medium",
-						SourceScheme: "Secure",
-						SourcePort:   443,
-					},
-				}
-				cookieJson, err := json.Marshal(cookieData)
-				if err != nil {
-					return "", err
-				}
-				return string(cookieJson), nil
-			}
-		}
-	}
-	return "", fmt.Errorf("no match x5sec cookie")
+	return string(body), nil
 }
 
 func Wconfig2Ck(jsonString string) (string, error) {
