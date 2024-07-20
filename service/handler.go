@@ -1,7 +1,6 @@
 package service
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
 )
@@ -26,16 +25,11 @@ func Wconfig2CkHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	// 构建响应
-	response := struct {
-		CookieJson string `json:"cookieJson"`
-	}{
-		CookieJson: cookieJson,
+	if len(cookieJson) == 0 {
+		http.Error(w, "Api Failed to convert wconfig to cookie", http.StatusInternalServerError)
+		return
 	}
-
+	// 直接返回 cookieJson 的内容作为响应
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(w, "Failed to encode response: "+err.Error(), http.StatusInternalServerError)
-	}
+	w.Write([]byte(cookieJson))
 }
