@@ -188,15 +188,15 @@ func postConfigToServer(wconfigJson string) (string, error) {
 		return "", err
 	}
 	logger.Println("API接口返回：", string(body))
-	var responseData ResponseData
-	err = json.Unmarshal(body, &responseData)
-	if err != nil {
-		logger.Println(err)
-		return "", err
-	}
-	if len(responseData.UrlEncode) == 0 || len(responseData.BxEt) == 0 || len(responseData.BxPp) == 0 {
-		return "", fmt.Errorf("ck接口返回异常")
-	}
+	// var responseData ResponseData
+	// err = json.Unmarshal(body, &responseData)
+	// if err != nil {
+	// 	logger.Println(err)
+	// 	return "", err
+	// }
+	// if len(responseData.UrlEncode) == 0 || len(responseData.BxEt) == 0 || len(responseData.BxPp) == 0 {
+	// 	return "", fmt.Errorf("ck接口返回异常")
+	// }
 
 	return string(body), nil
 }
