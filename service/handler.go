@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -11,21 +12,22 @@ func Wconfig2CkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var requestBody struct {
-		JsonString string `json:"jsonString"`
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
-		http.Error(w, "Bad request: "+err.Error(), http.StatusBadRequest)
+	// 读取请求体
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Failed to read request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
+	defer r.Body.Close()
 
-	cookieJson, err := Wconfig2Ck(requestBody.JsonString)
+	// 将请求体转成字符串传递给Wconfig2Ck
+	cookieJson, err := Wconfig2Ck(string(body))
 	if err != nil {
 		http.Error(w, "Internal server error: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	// 构建响应
 	response := struct {
 		CookieJson string `json:"cookieJson"`
 	}{
