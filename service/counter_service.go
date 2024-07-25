@@ -18,6 +18,7 @@ type JsonResult struct {
 	Code     int         `json:"code"`
 	ErrorMsg string      `json:"errorMsg,omitempty"`
 	Data     interface{} `json:"data"`
+	Total    int         `json:"total"`
 }
 
 // IndexHandler 计数器接口
@@ -33,6 +34,9 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 // CounterHandler 计数器接口
 func CounterHandler(w http.ResponseWriter, r *http.Request) {
 	res := &JsonResult{}
+
+	//预置total2000 2024.0725
+	res.Total = 2000
 
 	if r.Method == http.MethodGet {
 		counter, err := getCurrentCounter()
