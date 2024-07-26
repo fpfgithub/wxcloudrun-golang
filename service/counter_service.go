@@ -35,8 +35,8 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 func CounterHandler(w http.ResponseWriter, r *http.Request) {
 	res := &JsonResult{}
 
-	//预置total2000 2024.0725
-	res.Total = 2000
+	//预置total3000 2024.0725
+	res.Total = 3000
 
 	if r.Method == http.MethodGet {
 		counter, err := getCurrentCounter()
